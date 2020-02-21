@@ -1,0 +1,264 @@
+---
+layout:     post
+title:      Docker食用指南
+subtitle:   基本命令操作
+date:       2020-02-21
+author:     Cheng
+header-img: img/post-bg-cook.jpg
+catalog: true
+tags:
+    - Docker
+---
+
+[TOC]
+# Docker的基本命令
+
+## 搜索镜像
+
+1.docker search `imagename`  **搜索自己需要的容器	**
+
+## 下载镜像
+
+1.docker pull `iamgename`  **imagename dockerhub的镜像名称**
+
+2.docker pull `centos`  **下载一个centos的镜像**
+
+
+
+## 查看镜像
+
+**命令:**  docker images
+
+```
+[root@docker ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+centos              latest              470671670cac        2 weeks ago         237MB
+ubuntu              latest              ccc6e87d482b        3 weeks ago         64.2MB
+```
+
+
+
+## 运行中的容器
+
+**命令:**  docker ps (-a 查看运行的所有docker)
+
+```
+[root@docker ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+9565b85dbc53        ubuntu              "/bin/bash"         10 seconds ago      Up 7 seconds                            keen_pike
+```
+
+## 启动容器
+
+```
+命令：docker run -it imagesname /bin/bash
+```
+
+
+```
+-t	交互式操作
+-t	终端
+-d	指定在后台运行，带-d参数默认不进docker，需要使用exec命令
+-p	将容器的端口映射到本地
+    {
+        docker port=9999
+        localhost port=8080
+        docker run -d -p 9999:8080 imagesname python xxx.py
+    }
+imagesname	镜像名字
+/bin/bash 交互式Shell
+```
+
+
+## 守护容器
+
+```
+让docker在交互式容器后台运行：Ctrl+p 加上 Ctrl+q
+进入后台运行的容器: 
+1.docker attach container-id	不推荐使用，退出容器会导致容器停止运行
+2.docker exec container-id	推荐使用，退出容器不会导致容器停止运行
+
+example（exec）： docker exec -it container-id /bin/bash
+```
+
+
+
+## 删除容器
+
+```
+删除已运行的容器： docker rm -f container-id
+删除已有的镜像： docker rmi iamge-id
+```
+
+
+
+# Docker 命令
+
+## 重启、自启动Docker
+
+```
+systemctl restart docker && systemctl enable docker
+```
+
+## 查看Docker当前版本
+
+```
+Docker version
+
+Client: Docker Engine - Community
+ Version:           19.03.5
+ API version:       1.40
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:25:41 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          19.03.5
+  API version:      1.40 (minimum version 1.12)
+  Go version:       go1.12.12
+  Git commit:       633a0ea
+  Built:            Wed Nov 13 07:24:18 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.2.10
+  GitCommit:        b34a5c8af56e510852c35414db4c1f4fa6172339
+ runc:
+  Version:          1.0.0-rc8+dev
+  GitCommit:        3e425f80a8c931f88e6d94a8c831b9d5aa481657
+ docker-init:
+  Version:          0.18.0
+  GitCommit:        fec3683
+```
+
+## 显示系统信息
+
+```
+[root@clcdocker ~]# docker info
+Client:
+ Debug Mode: false
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 19.03.6
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Native Overlay Diff: true
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: b34a5c8af56e510852c35414db4c1f4fa6172339
+ runc version: 3e425f80a8c931f88e6d94a8c831b9d5aa481657
+ init version: fec3683
+ Security Options:
+  seccomp
+   Profile: default
+ Kernel Version: 3.10.0-1062.12.1.el7.x86_64
+ Operating System: CentOS Linux 7 (Core)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 1
+ Total Memory: 3.701GiB
+ Name: clcdocker
+ ID: 5S7O:B6ZQ:H56Q:RSKB:3ZKM:ZSSA:U3PF:GBBR:EXZL:AZXC:JUZD:K6RJ
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Username: limitrinno
+ Registry: https://index.docker.io/v1/
+ Labels:
+ Experimental: false
+ Insecure Registries:
+  127.0.0.0/8
+ Live Restore Enabled: false
+```
+
+## 日志信息
+
+```
+
+
+docker logs -f <ID>
+```
+
+## 检查使用率
+
+```
+docker status
+```
+
+## 启动、关闭、重启
+
+```
+启动一个关闭的容器：docker start container-id
+关闭一个运行的容器: docker stop container-id
+重启一个运行的容器: docker restart container-id
+```
+
+## 查看容器日志
+
+```
+-f: 让 docker logs 像使用 tail -f 一样来输出容器内部的标准输出。
+example: docker logs -f container-id
+```
+
+##  查看容器的进程
+
+```
+docker top 来查看容器内部运行的进程
+example: docker top container-id
+```
+
+## 创建Volume和查看
+
+```
+docker volume create volume-name
+
+docker volume inspect volume-name
+```
+
+## 通过mount挂载内容到Docker
+
+```
+docekr run -itd --name name-container --mount src=volume src,dst=docker src containner-id
+
+```
+
+```
+
+在创建的过程中，如果没有对应的Volume将会自动创建
+
+[root@hkdocker]# docker volume create nginx-web
+nginx-web
+[root@hkdocker]# docker volume inspect nginx-web
+[
+    {
+        "CreatedAt": "2020-02-08T17:08:53+08:00",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/nginx-web/_data",
+        "Name": "nginx-web",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+[root@hkdocker]# docker volume ls
+DRIVER              VOLUME NAME
+local               nginx-web
+```
+
